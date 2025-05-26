@@ -1,0 +1,14 @@
+[package]
+name = "hsyst-auth"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-web = "4.3.0"
+bcrypt = "0.14.0"
+jsonwebtoken = "8.3.0"
+actix-cors = "0.6.4"
+chrono = { version = "0.4.24", features = ["serde"] }
+serde = { version = "1.0.164", features = ["derive"] }
+tokio = { version = "1.28.2", features = ["full"] }
+actix-rt = "2.8.0"
