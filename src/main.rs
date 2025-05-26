@@ -1,13 +1,18 @@
+// seting up crates
 extern crate bcrypt;
 extern crate serde;
 
+// libraries
 use actix_web::{App, HttpServer};
 
-mod middlewares;
-mod routes;
+// modules
+pub mod middlewares;
+pub mod routes;
 
+// running the server
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    println!("Server running at http://localhost:8080");
     HttpServer::new(|| {
         App::new()
             .service(routes::index)
