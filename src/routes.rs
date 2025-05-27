@@ -1,7 +1,6 @@
 #![allow(unused_imports)] // I use it to don't show unused imports, but you can remove it
 // libraries
 use actix_web::{App, HttpResponse, Responder, get, post, web};
-use jsonwebtoken::{EncodingKey, Header, encode};
 use serde::{Deserialize, Serialize};
 
 // routes

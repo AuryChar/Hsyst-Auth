@@ -1,3 +1,6 @@
+/// # Main file
+/// This file just runs the server
+
 // seting up crates
 extern crate bcrypt;
 extern crate serde;
