@@ -6,7 +6,10 @@ extern crate bcrypt;
 extern crate serde;
 
 // libraries
-use actix_web::{App, HttpServer};
+use actix_web::{web, App, HttpServer};
+use rusqlite::Connection;
+use std::sync::Arc;
+use std::sync::Mutex;
 
 // modules
 pub mod middlewares;
@@ -17,8 +20,14 @@ pub mod routes;
 async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
     println!("Server running at http://localhost:8080");
-    HttpServer::new(|| {
+    let conn = Arc::new(Mutex::new(Connection::open("database.db").unwrap()));
+    match conn.lock() {
+        Ok(_) => println!("Database connected"),    
+        Err(_) => println!("Database not connected"),
+    }
+    HttpServer::new(move || {
         App::new()
+            .app_data(web::Data::new(conn.clone()))
             .service(routes::index)
     })
     .bind(("127.0.0.1", 8080))?
