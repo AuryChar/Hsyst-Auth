@@ -2,9 +2,10 @@
 // libraries
 use actix_web::{App, HttpResponse, Responder, get, post, web};
 use serde::{Deserialize, Serialize};
+use crate::middlewares;
 
 // routes
 #[get("/")]
 pub async fn index() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!") // hello world lol
+    HttpResponse::Ok().body(middlewares::generate_token("test".to_string(), "123".to_string())) // DEBUG: test token
 }

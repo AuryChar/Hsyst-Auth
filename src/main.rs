@@ -15,6 +15,7 @@ pub mod routes;
 // running the server
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenv::dotenv().ok();
     println!("Server running at http://localhost:8080");
     HttpServer::new(|| {
         App::new()
