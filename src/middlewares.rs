@@ -8,20 +8,26 @@ use std::env;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Claims {
-    pub sub: (String, String),
+    pub sub: String,
     pub exp: usize,
 }
 
 
-pub fn generate_token(email: String, password: String) -> String {
+pub fn generate_token(id: String) -> String {
     let key = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
 
     let claims = Claims {
-        sub: (email, password), // DEBUG: test claims
+        sub: id,
         exp: (chrono::Utc::now() + chrono::Duration::minutes(30)).timestamp() as usize
     };
     println!("Claims: {:#?}", claims); // DEBUG: test claims
 
     let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(key.as_bytes())).unwrap();
     token
+}
+
+pub fn verify_token(token: String) -> Result<Claims, String> {
+    let key = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
+    let token_data = decode::<Claims>(&token, &DecodingKey::from_secret(key.as_bytes()), &Validation::default()).unwrap();
+    Ok(token_data.claims)
 }

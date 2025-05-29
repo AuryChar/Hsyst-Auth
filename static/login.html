@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <script>
+      function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+      }
+
+      function deleteCookie(name) {
+        document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; secure; samesite=strict`;
+      }
+
+      (async function () {
+        const tokenAES = getCookie("tokenAES");
+
+        if (tokenAES) {
+          try {
+            const response = await fetch(
+              `/login?tokenReg=${encodeURIComponent(tokenAES)}`
+            );
+            const data = await response.json();
+
+            if (data.status === "Success") {
+              alert(
+                "Nós identificamos que você já tem uma conta. (Confirme para continuar)"
+              );
+              alert(
+                "Ao continuar, você terá sua sessão encerrada na Hsyst Auth. (Confirme para continuar)"
+              );
+              window.location.href = "/logout.html";
+            }
+          } catch (error) {}
+        } else {
+        }
+      })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#4caf50",
+              secondary: "#388e3c",
+              dark: "#1a1a1a",
+              "dark-light": "#2b2b2b",
+            },
+            animation: {
+              "fade-up": "fadeUp 0.5s ease-out",
+              "pulse-slow": "pulse 3s infinite",
+              "bounce-slow": "bounce 3s infinite",
+              float: "float 6s ease-in-out infinite",
+              glow: "glow 2s ease-in-out infinite",
+            },
+            keyframes: {
+              fadeUp: {
+                "0%": { opacity: "0", transform: "translateY(20px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              },
+              float: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+              glow: {
+                "0%, 100%": { boxShadow: "0 0 15px rgba(76, 175, 80, 0.3)" },
+                "50%": { boxShadow: "0 0 30px rgba(76, 175, 80, 0.6)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap");
+      body {
+        font-family: "Poppins", sans-serif;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gradient-to-br from-dark-light to-dark min-h-screen">
+    <!-- Background decoration -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+      <div
+        class="absolute -top-32 -right-32 w-64 h-64 bg-primary/10 rounded-full blur-3xl animate-float"
+      ></div>
+      <div
+        class="absolute -bottom-32 -left-32 w-64 h-64 bg-secondary/10 rounded-full blur-3xl animate-float"
+        style="animation-delay: -3s"
+      ></div>
+    </div>
+
+    <div
+      class="min-h-screen flex items-center justify-center p-4 backdrop-blur-sm relative"
+    >
+      <div
+        class="w-full max-w-md p-8 bg-dark-light/95 rounded-2xl shadow-2xl space-y-8 animate-fade-up backdrop-blur-md border border-primary/20 animate-glow"
+      >
+        <div
+          class="text-center transform hover:scale-105 transition-transform duration-300"
+        >
+          <h2
+            class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary animate-pulse-slow"
+          >
+            Hsyst Auth
+          </h2>
+          <p class="text-gray-400 mt-3 text-sm tracking-wider">
+            Faça login para continuar
+          </p>
+        </div>
+
+        <form id="login-form" class="space-y-6">
+          <div class="group space-y-2">
+            <label
+              for="email"
+              class="block text-sm font-medium text-gray-300 transition-all group-hover:text-primary"
+            >
+              E-mail
+            </label>
+            <div class="relative">
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="w-full px-6 py-4 bg-dark/50 border-2 border-primary/30 rounded-xl text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-300 hover:border-primary/60 placeholder:text-gray-500"
+                placeholder="Digite seu e-mail"
+                required
+              />
+              <span
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-xl opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-x-2"
+              >
+                ✉️
+              </span>
+            </div>
+          </div>
+
+          <div class="group space-y-2">
+            <label
+              for="password"
+              class="block text-sm font-medium text-gray-300 transition-all group-hover:text-primary"
+            >
+              Senha
+            </label>
+            <div class="relative">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="w-full px-6 py-4 bg-dark/50 border-2 border-primary/30 rounded-xl text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/20 transition-all duration-300 hover:border-primary/60 placeholder:text-gray-500"
+                placeholder="Digite sua senha"
+                required
+              />
+              <span
+                class="absolute right-4 top-1/2 transform -translate-y-1/2 text-xl opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-x-2"
+              >
+                🔒
+              </span>
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="w-full py-4 bg-gradient-to-r from-primary to-secondary text-white text-lg font-semibold rounded-xl transition-all duration-500 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-primary/50 relative overflow-hidden group"
+          >
+            <span class="relative z-10 flex items-center justify-center gap-2">
+              Login <span class="text-xl">→</span>
+            </span>
+            <div
+              class="absolute inset-0 bg-white/20 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"
+            ></div>
+          </button>
+
+          <div
+            id="error-message"
+            class="text-red-500 text-center text-sm animate-bounce-slow"
+          ></div>
+          <div
+            id="sucess-message"
+            class="text-green-500 text-center text-sm"
+          ></div>
+        </form>
+
+        <!-- Additional Buttons -->
+        <div class="flex justify-between mt-4">
+          <a
+            href="/register.html"
+            class="text-sm text-primary hover:text-secondary transition-all duration-300"
+          >
+            Registrar
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Modal -->
+    <div
+      id="accountModal"
+      class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center transition-all duration-300"
+    >
+      <div
+        class="bg-dark-light/95 p-8 rounded-2xl max-w-sm w-full mx-4 transform transition-all duration-300 scale-95 opacity-0"
+        id="modalContent"
+      >
+        <p class="text-white text-xl font-medium mb-6 text-center">
+          Você tem uma conta?
+        </p>
+        <div class="flex gap-4">
+          <button
+            id="yesButton"
+            class="flex-1 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl transition-all duration-300 hover:scale-105 active:scale-95"
+          >
+            Sim
+          </button>
+          <button
+            id="noButton"
+            class="flex-1 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl transition-all duration-300 hover:scale-105 active:scale-95"
+          >
+            Não
+          </button>
+        </div>
+      </div>
+    </div>
+
+<script>
+    const errorMessage = document.getElementById('error-message');
+    const sucessMessage = document.getElementById('sucess-message');
+    errorMessage.textContent = '';
+    sucessMessage.textContent = '';
+
+
+    document.getElementById('login-form').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            // Envia a primeira requisição para o Crypt1
+            const crypt1Response = await fetch(`/crypt1?email=${encodeURIComponent(email)}&senha=${encodeURIComponent(password)}`);
+            const crypt1Data = await crypt1Response.json();
+
+            if (!crypt1Data.jwtToken) {
+                throw new Error('Erro ao adquirir o token JWT do crypt1.');
+            }
+
+            // Envia a segunda requisição para o Crypt2
+            const crypt2Response = await fetch(`/crypt2?email=${encodeURIComponent(email)}&senha=${encodeURIComponent(password)}&crypt1=${encodeURIComponent(crypt1Data.jwtToken)}`);
+            const crypt2Data = await crypt2Response.json();
+
+            if (!crypt2Data.tokenAES) {
+                throw new Error('Erro ao adquirir o token AES do crypt2.');
+            }
+
+            // Realiza o login
+            const registerResponse = await fetch(`/login?tokenReg=${encodeURIComponent(crypt2Data.tokenAES)}`);
+            const registerData = await registerResponse.json();
+
+            if (registerData.status === 'Error') {
+                errorMessage.textContent = registerData.log;
+            } else if (registerData.status === 'Success') {
+                errorMessage.textContent = '';
+                sucessMessage.textContent = "Login realizado com sucesso! Redirecionando em 2 segundos...";
+                document.cookie = `tokenAES=${encodeURIComponent(crypt2Data.tokenAES)}; path=/; secure; samesite=None; max-age=86400`;
+                setTimeout(() => {
+                    window.location.href = '/html'; // Redirecionando após 2 segundos
+                }, 2000);
+            } else {
+                errorMessage.textContent = '';
+                errorMessage.textContent = 'Ocorreu um erro ao realizar o seu login, tente novamente mais tarde.';
+            }
+        } catch (error) {
+            console.error('Erro durante o processo:', error);
+            errorMessage.textContent = '';
+            errorMessage.textContent = 'Ocorreu um erro inesperado. Tente novamente mais tarde.';
+        }
+    });
+
+</script>
+  </body>
+</html>

@@ -10,6 +10,7 @@ use actix_web::{web, App, HttpServer};
 use rusqlite::Connection;
 use std::sync::Arc;
 use std::sync::Mutex;
+use actix_files as fs;
 
 // modules
 pub mod middlewares;
@@ -27,8 +28,9 @@ async fn main() -> std::io::Result<()> {
     }
     HttpServer::new(move || {
         App::new()
+            .service(routes::register)
+            .service(fs::Files::new("/", "./static").index_file("html/index.html"))
             .app_data(web::Data::new(conn.clone()))
-            .service(routes::index)
     })
     .bind(("127.0.0.1", 8080))?
     .run()

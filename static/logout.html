@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<script>
+    // Função para obter um cookie pelo nome
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    // Função para deletar um cookie pelo nome
+    function deleteCookie(name) {
+        document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC; secure; samesite=strict`;
+    }
+
+    (async function () {
+        // Obter o tokenAES dos cookies
+        const tokenAES = getCookie('tokenAES');
+
+        if (tokenAES) {
+            try {
+                // Enviar o valor do tokenAES para o endpoint /login
+                const response = await fetch(`/login?tokenReg=${encodeURIComponent(tokenAES)}`);
+                const data = await response.json();
+
+                // Verificar o status da resposta
+                if (data.status === "Error") {
+                    // Se for inválido, deletar o cookie e redirecionar para register.html
+                    deleteCookie('tokenAES');
+                    window.location.href = '/login.html';
+                }
+            } catch (error) {
+                console.error('Erro ao validar o tokenAES:', error);
+                deleteCookie('tokenAES');
+                window.location.href = '/login.html';
+            }
+        } else {
+            // Redirecionar para register.html se o cookie não existir
+            window.location.href = '/login.html';
+        }
+    })();
+</script>
+
+
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logout - Hsyst Auth</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2b2b2b, #1a1a1a);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(30, 30, 30, 0.95);
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        h2 {
+            color: #4caf50;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .loading-text {
+            font-size: 1.2rem;
+            color: #b3b3b3;
+            font-weight: 400;
+        }
+
+        .dots {
+            font-weight: bold;
+            color: #4caf50;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Estamos desconectando da Hsyst Auth...</h2>
+        <p class="loading-text">
+            Por favor, aguarde <span id="dots" class="dots">.</span>
+        </p>
+    </div>
+
+    <script>
+        let dotCount = 1;
+        const dotElement = document.getElementById("dots");
+
+        const dotInterval = setInterval(() => {
+            dotCount = (dotCount % 3) + 1;
+            dotElement.textContent = ".".repeat(dotCount);
+        }, 500); // Atualiza os pontos a cada 500ms
+
+        setTimeout(function () {
+            clearInterval(dotInterval); // Para a animação dos pontos
+            document.cookie = "tokenAES=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/";
+            window.location.href = '/login.html';
+        }, 5000); // Redireciona após 5 segundos
+    </script>
+</body>
+
+</html>
