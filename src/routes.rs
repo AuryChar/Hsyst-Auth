@@ -1,5 +1,5 @@
 // libraries
-use actix_web::{cookie::{Cookie, SameSite}, post, web, HttpResponse, Responder};
+use actix_web::{cookie::{Cookie, SameSite}, delete, get, post, web, HttpRequest, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use crate::middlewares;
@@ -140,4 +140,38 @@ pub async fn login(db: web::Data<Arc<Mutex<Connection>>>, req: web::Json<Registe
             }))
         }
     }
+}
+
+#[get("/verify")]
+pub async fn verify_user(req: HttpRequest) -> impl Responder {
+    match req.cookie("token") {
+        Some(c) => {
+            let token = c.value();
+            HttpResponse::Ok().json(json!({
+                "status": "success",
+                "token": token
+            }))
+        },
+        None => HttpResponse::Unauthorized().json(json!({
+            "status": "error",
+            "message": "Unauthorized"
+        }))
+    }
+}
+
+#[delete("/logout")]
+pub async fn logout() -> impl Responder {
+    let cookie = Cookie::build("token", "")
+        .path("/")
+        .secure(true)
+        .same_site(SameSite::Strict)
+        .http_only(true)
+        .max_age(Duration::seconds(0))
+        .finish();
+    HttpResponse::Ok()
+        .cookie(cookie)
+        .json(json!({
+            "status": "success",
+            "message": "User logged out successfully"
+        }))
 }

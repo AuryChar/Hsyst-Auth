@@ -30,7 +30,9 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .service(routes::register)
             .service(routes::login)
-            .service(fs::Files::new("/", "./static").index_file("html/index.html"))
+            .service(routes::verify_user)
+            .service(routes::logout)
+            .service(fs::Files::new("/", "./static").index_file("index.html"))
             .app_data(web::Data::new(conn.clone()))
     })
     .bind(("127.0.0.1", 8080))?
