@@ -1,6 +1,5 @@
-#![allow(unused_imports)] // I use it to don't show unused imports, but you can remove it
 // libraries
-use actix_web::{App, HttpResponse, Responder, get, post, web, cookie::{Cookie, SameSite}};
+use actix_web::{cookie::{Cookie, SameSite}, post, web, HttpResponse, Responder};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use crate::middlewares;
@@ -39,16 +38,6 @@ pub async fn register(db: web::Data<Arc<Mutex<Connection>>>, req: web::Json<Regi
             "message": "Could not acquire database lock"
         })),
     };
-    
-    if let Err(e) = conn.execute(
-        "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, email TEXT NOT NULL UNIQUE, password TEXT NOT NULL)", // TODO: add this in server init
-        []
-    ) {
-        return HttpResponse::InternalServerError().json(json!({
-            "status": "error",
-            "message": format!("Database error: {}", e)
-        }));
-    }
 
     let email = req.email.clone();
     let password = req.password.clone();
@@ -97,4 +86,58 @@ pub async fn register(db: web::Data<Arc<Mutex<Connection>>>, req: web::Json<Regi
         "status": "success",
         "message": "User registered successfully"
     }))
+}
+
+#[post("/login")]
+pub async fn login(db: web::Data<Arc<Mutex<Connection>>>, req: web::Json<RegisterForm>) -> impl Responder {
+    let conn = match db.lock() {
+        Ok(c) => c,
+        Err(_) => return HttpResponse::InternalServerError().json(json!({
+            "status": "error",
+            "message": "Internal server error"
+        })),
+    };
+
+    let email = req.email.clone();
+    let password = req.password.clone();
+
+    let user_password: Result<String, _> = conn.query_row(
+        "SELECT password FROM users WHERE email = ?",
+        &[&email],
+        |row| row.get(0),
+    );
+
+    match user_password {
+        Ok(password_hash) => {
+            match verify(&password, &password_hash) {
+                Ok(true) => {
+                    let token = middlewares::generate_token(email.clone());
+                    let cookie = create_cookie(token);
+
+                    HttpResponse::Ok()
+                        .cookie(cookie)
+                        .json(json!({
+                            "status": "success",
+                            "message": "User logged in successfully"
+                        }))
+                },
+                _ => HttpResponse::Unauthorized().json(json!({
+                    "status": "error",
+                    "message": "Invalid email or password"
+                })),
+            }
+        },
+        Err(rusqlite::Error::QueryReturnedNoRows) => {
+            HttpResponse::Unauthorized().json(json!({
+                "status": "error",
+                "message": "Invalid email or password"
+            }))
+        },
+        Err(e) => {
+            HttpResponse::InternalServerError().json(json!({
+                "status": "error",
+                "message": format!("Database error: {}", e)
+            }))
+        }
+    }
 }

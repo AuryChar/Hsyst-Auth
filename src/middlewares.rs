@@ -18,9 +18,8 @@ pub fn generate_token(id: String) -> String {
 
     let claims = Claims {
         sub: id,
-        exp: (chrono::Utc::now() + chrono::Duration::minutes(30)).timestamp() as usize
+        exp: (chrono::Utc::now() + chrono::Duration::days(1)).timestamp() as usize
     };
-    println!("Claims: {:#?}", claims); // DEBUG: test claims
 
     let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(key.as_bytes())).unwrap();
     token

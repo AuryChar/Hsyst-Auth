@@ -29,6 +29,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .service(routes::register)
+            .service(routes::login)
             .service(fs::Files::new("/", "./static").index_file("html/index.html"))
             .app_data(web::Data::new(conn.clone()))
     })
