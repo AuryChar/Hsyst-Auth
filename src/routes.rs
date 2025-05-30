@@ -38,7 +38,8 @@ pub async fn register(db: web::Data<Arc<Mutex<Connection>>>, req: web::Json<Regi
             "message": "Could not acquire database lock"
         })),
     };
-
+    conn.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, email TEXT, password TEXT)", []).unwrap();
+    
     let email = req.email.clone();
     let password = req.password.clone();
     
