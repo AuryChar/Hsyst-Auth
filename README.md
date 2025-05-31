@@ -35,7 +35,7 @@ cargo run
 * [Actix Web](https://actix.rs/) - Back end framework.
 
 ## License
-Doesn't have license, it's free and open-source :)
+This project licensed is under the MIT license
 
 ## Authors
 [Aury Char](https://github.com/AuryChar)
