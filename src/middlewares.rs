@@ -1,7 +1,7 @@
 use jsonwebtoken::{encode,decode, DecodingKey, Validation, EncodingKey, Header};
-use actix_web::{http, web};
 use serde::{Deserialize, Serialize};
 use std::env;
+use time::{Duration, OffsetDateTime};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Claims {
@@ -9,13 +9,13 @@ pub struct Claims {
     pub exp: usize,
 }
 
-
 pub fn generate_token(id: String) -> String {
+    let expiration = OffsetDateTime::now_utc() + Duration::days(1);
     let key = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
 
     let claims = Claims {
         sub: id,
-        exp: (chrono::Utc::now() + chrono::Duration::days(1)).timestamp() as usize
+        exp: expiration.unix_timestamp() as usize,
     };
 
     let token = encode(&Header::default(), &claims, &EncodingKey::from_secret(key.as_bytes())).unwrap();
