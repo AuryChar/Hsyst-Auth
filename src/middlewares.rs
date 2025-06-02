@@ -1,6 +1,3 @@
-#![allow(unused_imports)]
-#![allow(unused_variables)]
-#![allow(dead_code)]
 use jsonwebtoken::{encode,decode, DecodingKey, Validation, EncodingKey, Header};
 use actix_web::{http, web};
 use serde::{Deserialize, Serialize};
